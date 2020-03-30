@@ -147,9 +147,6 @@ end)
 
 -- ############### Main Database Query Function ################
 -- #############################################################
-local function SBAN_SQL_Query_Callback(results, qTab)
-	qTab.cb(results, qTab)
-end
 
 local function SBAN_SQL_Query(sql, qTab)
     local qTab = qTab or {}
@@ -161,7 +158,7 @@ local function SBAN_SQL_Query(sql, qTab)
             return results[1]
         end
     elseif qTab.cb then
-        database_sban:query(sql, SBAN_SQL_Query_Callback, qTab)
+        database_sban:query(sql, qTab.cb, qTab)
     else
         database_sban:query(sql)
     end
@@ -330,12 +327,12 @@ function SBAN_unban(steamid, ply, ureason)
 			SET RemovedOn = %d,
 				RemovedBy = %d,
 				RemoveType = 'U',
-				ureason = '%s',
+				ureason = '%s'
 			WHERE authid = '%s'
 				AND RemoveType IS NULL
 	]]
 	SBAN_SQL_Query(string.format(q, prefix, os.time(), adminID,
-		database_sban:escape(ureason), database_sban:escape(steamID)), qTab)
+		database_sban:escape(ureason), database_sban:escape(steamid)), qTab)
 	XGUIRefreshBans()
 end
 
@@ -494,6 +491,11 @@ local function CheckAdmin(result, qTab, lev)
 			return
 		end
 	elseif lev == "addtogroup" then
+        if not result[1] then
+            RemoveAdmin(ply)
+            return
+        end
+
 		local group = result[1].srv_group
 
 		if group ~= nil and string.len(group) > 0 then
