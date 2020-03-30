@@ -60,11 +60,18 @@ sbanid:help( "Bans steamid." )
 
 ------------------------------ Unban SourceBans ------------------------------
 function ulx.unsban( calling_ply, steamid, ureason )
+	if not IsValid(calling_ply) then
+		ULib.tsayError(calling_ply, "Error: Cannot call this function from server console!")
+		return
+	end
+
 	steamid = steamid:upper()
+
 	if not ULib.isValidSteamID( steamid ) then
 		ULib.tsayError( calling_ply, "Error: Invalid Steam ID!", true )
 		return
 	end
+
 	if SBanTable[ steamid ] then
 		if ( SBanTable[ steamid ].adminid != calling_ply.sb_aid ) and !ULib.ucl.query( calling_ply, "ulx unsbanall" )  then
 			ULib.tsayError( calling_ply, "Error: You do not have permission to remove another admin's ban.", true )
@@ -74,13 +81,17 @@ function ulx.unsban( calling_ply, steamid, ureason )
 		ULib.tsayError( calling_ply, "Error: You do not have permission to remove another admin's ban.", true )
 		return
 	end
+
 	name = SBanTable[ steamid ] and SBanTable[ steamid ].name
-	if !ureason or string.len(ureason) < 3 then
+	if not ureason or string.len(ureason) < 3 then
 		ULib.tsayError( calling_ply, "Error: Please specify an unban reason!", true )
 		return
 	end
+
 	ureason = calling_ply:Nick() .. ": "..ureason
+
 	SBAN_unban( steamid, calling_ply, ureason )
+	
 	if name then
 		ulx.fancyLogAdmin( calling_ply, "#A unbanned steamid #s", steamid .. " (" .. name .. ")" )
 	else
@@ -179,18 +190,24 @@ if SERVER then ulx.convar( "votesbanMinvotes", "3", _, ULib.ACCESS_ADMIN ) end -
 if ulxBanOverride then
 	timer.Simple(0, function()
 	
-		local sbanov = ulx.command( "Utility", "ulx ban", ulx.sban, "!ban" )
+		local sbanov = ulx.command( "Utility", "ulx ban", ulx.sban, "!ban", false, false, true )
 		sbanov:addParam{ type=ULib.cmds.PlayerArg }
 		sbanov:addParam{ type=ULib.cmds.NumArg, hint="minutes, 0 for perma", ULib.cmds.optional, ULib.cmds.allowTimeString, min=0 }
 		sbanov:addParam{ type=ULib.cmds.StringArg, hint="reason", ULib.cmds.optional, ULib.cmds.takeRestOfLine, completes=ulx.common_kick_reasons }
 		sbanov:defaultAccess( ULib.ACCESS_ADMIN )
 		sbanov:help( "Bans target." )
 		
-		local sbanidov = ulx.command( "Utility", "ulx banid", ulx.sbanid )
+		local sbanidov = ulx.command( "Utility", "ulx banid", ulx.sbanid, nil, false, false, true )
 		sbanidov:addParam{ type=ULib.cmds.StringArg, hint="steamid" }
 		sbanidov:addParam{ type=ULib.cmds.NumArg, hint="minutes, 0 for perma", ULib.cmds.optional, ULib.cmds.allowTimeString, min=0 }
 		sbanidov:addParam{ type=ULib.cmds.StringArg, hint="reason", ULib.cmds.optional, ULib.cmds.takeRestOfLine, completes=ulx.common_kick_reasons }
 		sbanidov:defaultAccess( ULib.ACCESS_SUPERADMIN )
 		sbanidov:help( "Bans steamid." )
+
+		local sunbanov = ulx.command("Utilify", "ulx unban", ulx.unsban, nil, false, false, true)
+		sunbanov:addParam{type=ULib.cmds.StringArg, hint="steamid"}
+		sunbanov:addParam{type=ULib.cmds.StringArg, hint="unban reason", ULib.cmds.takeRestOfLine}
+		sunbanov:defaultAccess( ULib.ACCESS_ADMIN )
+		sunbanov:help( "Unbans Steam ID from SourceBans." )
 	end)
 end
