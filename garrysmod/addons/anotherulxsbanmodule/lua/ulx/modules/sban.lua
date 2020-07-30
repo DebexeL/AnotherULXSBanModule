@@ -262,8 +262,6 @@ function SBAN_doban(inip, steamID, name, length, reason, callingAdmin, lenderID)
 		time, (time + length), length, reason, adminID, 
 		database_sban:escape(SBAN_SERVERID)
 	), qTab)
-
-	SBAN_SQL_Query(query, qTab)
 	
 	if lenderID and banLender then
 		lenderID = database_sban:escape(lenderID)
