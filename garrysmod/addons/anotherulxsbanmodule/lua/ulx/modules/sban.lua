@@ -255,7 +255,7 @@ function SBAN_doban(inip, steamID, name, length, reason, callingAdmin, lenderID)
 		INSERT INTO %sbans 
 			(ip, authid, name, created, ends, length, reason, aid, sid)
 		VALUES (
-			'%s', '%s', '%s', %d, %d, %d, '%s', '%s', %d, %d
+			'%s', '%s', '%s', %d, %d, %d, '%s', %d, %d
 		)
 	]]
 	SBAN_SQL_Query(string.format(q, prefix, ip, steamID, name,
@@ -271,11 +271,11 @@ function SBAN_doban(inip, steamID, name, length, reason, callingAdmin, lenderID)
 			INSERT INTO %sbans 
 				(ip, authid, name, created, ends, length, reason, aid, sid)
 			VALUES (
-				'%s', '%s', '%s', %d, %d, %d, '%s', '%s', %d, %d
+				'%s', '%s', '%s', %d, %d, %d, '%s', %d, %d
 			)
 		]]
 
-		SBAN_SQL_Query(string.format(q, prefix, ip, lenderID, name,
+		SBAN_SQL_Query(string.format(q2, prefix, ip, lenderID, name,
 			time, (time + length), length, reason, adminID, 
 			database_sban:escape(SBAN_SERVERID)
 		), qTab)
