@@ -46,9 +46,8 @@ ulxBanOverride				= false			-- Override the default ulx ban to use sban.
 -- Follow the format below to add more groups, make sure to add a comma if it isn't the last entry.
 local adminTable = {
 	["superadmin"] = true,
-	["admin"] = true,
+	["admin"] = true
 }
-
 
 -- This table excludes named groups from being removed, even if the option is turned on.
 -- Format is the same as the admin table above.
@@ -60,9 +59,9 @@ if not file.Exists("sban", "DATA") then
 	file.CreateDir("sban")
 end
 
-local currenttime = os.time()
-local configTable
-if not file.Exists("sban/config.txt", "DATA") then
+local currenttime = os.time() -- Get the current Operating System time and store it in a variable "currenttime".
+local configTable -- Prepare the array configTable
+if not file.Exists("sban/config.txt", "DATA") then -- If file "sban/config.txt" does not exist, then...
 	configTable = {}
 	configTable.SBAN_PREFIX = SBAN_PREFIX
 	configTable.SBAN_WEBSITE = SBAN_WEBSITE
@@ -83,8 +82,8 @@ if not file.Exists("sban/config.txt", "DATA") then
 	configTable.tttKarmaBan = tttKarmaBan and "yes" or "no"
 	configTable.ulxBanOverride = ulxBanOverride and "yes" or "no"
 
-	file.Write("sban/config.txt", util.TableToKeyValues(configTable))
-elseif file.Exists("sban/config.txt", "DATA") and file.Time("sban/config.txt", "DATA") < currenttime then
+	file.Write("sban/config.txt", util.TableToKeyValues(configTable)) -- create the file in question and fill it with the values from "configTable".
+elseif file.Exists("sban/config.txt", "DATA") and file.Time("sban/config.txt", "DATA") < currenttime then -- If file "sban/config.txt" does exist and its last modified time (in Unix time) is less than "currenttime", then...
 	configTable = {}
 	configTable.SBAN_PREFIX = SBAN_PREFIX
 	configTable.SBAN_WEBSITE = SBAN_WEBSITE
@@ -105,10 +104,9 @@ elseif file.Exists("sban/config.txt", "DATA") and file.Time("sban/config.txt", "
 	configTable.tttKarmaBan = tttKarmaBan and "yes" or "no"
 	configTable.ulxBanOverride = ulxBanOverride and "yes" or "no"
 
-	file.Write("sban/config.txt", util.TableToKeyValues(configTable))
-else
+	file.Write("sban/config.txt", util.TableToKeyValues(configTable)) --  Write the file with the values from "configTable".
+else -- If none of the above are applicable this time, just read the configs from the config file.
 	configTable = util.KeyValuesToTable(file.Read("sban/config.txt", "DATA"))
-
 	SBAN_PREFIX = configTable.sban_prefix
 	SBAN_WEBSITE = configTable.sban_website
 	SBANDATABASE_HOSTNAME = configTable.sbandatabase_hostname
@@ -128,8 +126,8 @@ else
 	tttKarmaBan = configTable.tttkarmaban == "yes"
 	ulxBanOverride = configTable.ulxbanoverride == "yes"
 end
-
-local currenttime = os.time()
+ 
+-- Pretty much the same thing here as above, just a different file and a different source.
 if not file.Exists("sban/admingroups.txt", "DATA") then
 	file.Write("sban/admingroups.txt", util.TableToJSON(adminTable))
 elseif file.Exists("sban/admingroups.txt", "DATA") and file.Time("sban/admingroups.txt", "DATA") < currenttime then
@@ -138,7 +136,7 @@ else
 	adminTable = util.JSONToTable(file.Read("sban/admingroups.txt", "DATA"))
 end
 
-local currenttime = os.time()
+-- Same as above.
 if not file.Exists("sban/excludedgroups.txt", "DATA") then
 	file.Write("sban/excludedgroups.txt", util.TableToJSON(excludedGroups))
 elseif file.Exists("sban/excludedgroups.txt", "DATA") and file.Time("sban/excludedgroups.txt", "DATA") < currenttime then
