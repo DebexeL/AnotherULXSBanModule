@@ -60,6 +60,7 @@ if not file.Exists("sban", "DATA") then
 	file.CreateDir("sban")
 end
 
+local currenttime = os.time()
 local configTable
 if not file.Exists("sban/config.txt", "DATA") then
 	configTable = {}
@@ -81,6 +82,29 @@ if not file.Exists("sban/config.txt", "DATA") then
 	configTable.banListRefreshTime = banListRefreshTime
 	configTable.tttKarmaBan = tttKarmaBan and "yes" or "no"
 	configTable.ulxBanOverride = ulxBanOverride and "yes" or "no"
+
+	file.Write("sban/config.txt", util.TableToKeyValues(configTable))
+elseif file.Exists("sban/config.txt", "DATA") and file.Time("sban/config.txt", "DATA") < currenttime then
+	configTable = {}
+	configTable.SBAN_PREFIX = SBAN_PREFIX
+	configTable.SBAN_WEBSITE = SBAN_WEBSITE
+	configTable.SBANDATABASE_HOSTNAME = SBANDATABASE_HOSTNAME
+	configTable.SBANDATABASE_HOSTPORT = SBANDATABASE_HOSTPORT
+	configTable.SBANDATABASE_DATABASE = SBANDATABASE_DATABASE
+	configTable.SBANDATABASE_USERNAME = SBANDATABASE_USERNAME
+	configTable.SBANDATABASE_PASSWORD = SBANDATABASE_PASSWORD
+	configTable.APIKey = APIKey
+	configTable.removeFromGroup = removeFromGroup and "yes" or "no"
+	configTable.checkSharing = checkSharing and "yes" or "no"
+	configTable.checkIP = checkIP and "yes" or "no"
+	configTable.banLender = banLender and "yes" or "no"
+	configTable.announceBanCount = announceBanCount and "yes" or "no"
+	configTable.announceLender = announceLender and "yes" or "no"
+	configTable.banRetrieveLimit = banRetrieveLimit
+	configTable.banListRefreshTime = banListRefreshTime
+	configTable.tttKarmaBan = tttKarmaBan and "yes" or "no"
+	configTable.ulxBanOverride = ulxBanOverride and "yes" or "no"
+
 	file.Write("sban/config.txt", util.TableToKeyValues(configTable))
 else
 	configTable = util.KeyValuesToTable(file.Read("sban/config.txt", "DATA"))
@@ -105,13 +129,19 @@ else
 	ulxBanOverride = configTable.ulxbanoverride == "yes"
 end
 
+local currenttime = os.time()
 if not file.Exists("sban/admingroups.txt", "DATA") then
+	file.Write("sban/admingroups.txt", util.TableToJSON(adminTable))
+elseif file.Exists("sban/admingroups.txt", "DATA") and file.Time("sban/admingroups.txt", "DATA") < currenttime then
 	file.Write("sban/admingroups.txt", util.TableToJSON(adminTable))
 else
 	adminTable = util.JSONToTable(file.Read("sban/admingroups.txt", "DATA"))
 end
 
+local currenttime = os.time()
 if not file.Exists("sban/excludedgroups.txt", "DATA") then
+	file.Write("sban/excludedgroups.txt", util.TableToJSON(excludedGroups))
+elseif file.Exists("sban/excludedgroups.txt", "DATA") and file.Time("sban/excludedgroups.txt", "DATA") < currenttime then
 	file.Write("sban/excludedgroups.txt", util.TableToJSON(excludedGroups))
 else
 	excludedGroups = util.JSONToTable(file.Read("sban/excludedgroups.txt", "DATA"))
